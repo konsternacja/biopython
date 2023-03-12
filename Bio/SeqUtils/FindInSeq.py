@@ -94,6 +94,10 @@ class FindRepeats:
             subsequence (key) and number of their appearance
             (value) in sequence.
         """
+
+        # TODO repeats are now overlapping
+        # implement overlap=True/False modes
+
         counts = {}
         for j in range(rep_len):
             seq = sequence[j:]
