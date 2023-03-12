@@ -65,17 +65,16 @@ class FindRepeats:
             rep_len (int): Desired substring length.
 
         Returns:
-            set: Set of all possible subsequences of `length == rep_len`
-            in all reading frames.
+            list: Set of all possible subsequences of `length == rep_len`
+            in all reading frames sorted alphabetically.
         """
+        subseqs = []
         for j in range(rep_len):
             seq = sequence[j:]  # shift the reading frame
-            subseqs = set(
-                seq[i : i + rep_len]
-                for i in range(0, len(seq), rep_len)
-                if len(seq[i : i + rep_len]) == rep_len
-            )
-        return subseqs
+            subseqs += [seq[i : i + rep_len]
+                        for i in range(0, len(seq), rep_len)
+                        if len(seq[i : i + rep_len]) == rep_len]
+        return sorted(list(set(subseqs)))
 
     def _count_subseqs(self, sequence: object, subseqs: set, rep_len: int,
                        threshold: int) -> dict:
