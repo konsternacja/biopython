@@ -1,3 +1,8 @@
+# Copyright 2023 by Filip Hajdyła.  All rights reserved.
+# This code is part of the Biopython distribution and governed by its
+# license.  Please see the LICENSE file that should have been included
+# as part of this package.
+
 class FindRepeats:
     """
     A class that is used to find and count all subsequences within the
@@ -10,7 +15,8 @@ class FindRepeats:
         - sequence (Seq object): The input sequence to search in.
         - length (int): The length of subsequences that are to be found. (default 3)
         - sort (str): Determines if and how (descending/ascending) `self.counts`
-                      is to be sorted.
+                      is to be sorted. It is sorted primarily by value and secondarily
+                      by key in alphabetical order.
         - threshold (int): The minimum number of subsequence counts in
                            the sequence. Subsequences that have number
                            of counts below threshold will be filtered out
@@ -84,6 +90,11 @@ class FindRepeats:
                 return False
         counts = dict(filter(_filter, counts.items()))
         return counts
+
+# TODO:
+# class FindORFs
+# class FindSNPs
+# class FindSubseqs (maybe some other name?)
 
 
 if __name__ == "__main__":
