@@ -1,111 +1,81 @@
 class FindRepeats:
     """
-    A class that finds all possible subsequences of a given length in all
-    reading frames and counts the number of appearances of each subsequence
-    in a given sequence for values equal or above a given threshold.
+    A class that is used to find and count all subsequences within the
+    sequence. It creates the set of all possible subsequences and then
+    uses it to count non-overlapping repeats of each subsequence in the set.
+    Length of subsequences can be adjusted using `length` argument as
+    described below. The output dictionary can be filtered by
 
     Args:
-        sequence (Seq object): The input sequence to search.
-        rep_len (int): The length of the desired substring.
-        threshold (int): The minimum number of appearances of a substring
-                         to be counted. Threshold affects `self.counts`
-                         output but does not trim off `self.subseqs` set.
+        - sequence (Seq object): The input sequence to search in.
+        - length (int): The length of subsequences that are to be found. (default 3)
+        - sort (str): Determines if and how (descending/ascending) `self.counts`
+                      is to be sorted.
+        - threshold (int): The minimum number of subsequence counts in
+                           the sequence. Subsequences that have number
+                           of counts below threshold will be filtered out
+                           from the output dictionary. (default 0 -> no filtering)
 
     Attributes:
-        sequence (Seq object): The input sequence to search.
-        rep_len (int): The length of the desired substring.
-        threshold (int): The minimum number of appearances of a substring
-                         to be counted. Threshold affects `self.counts`
-                         output but does not trim off `self.subseqs` set.
-        subseqs (set): The set of all possible subsequences of
-                       `length == rep_len` in all reading frames.
-        counts (dict): The dictionary containing the subsequence (key) and
-                       their number of appearance (value) in sequence after
-                       being filtered by threshold.
+        - subseqs (set): The set of all possible subsequences of
+                         `length == length`. Subsequences are searched for
+                         in all reading frames which means they do overlap.
+        - counts (dict): The dictionary containing the subsequences (keys) and
+                         their counts (values). This dictionary can be filtered
+                         using `threshold` argument or sorted using `sort` argument.
+
+    ! ONLY FOR INTERNAL USE !
+
+    TODO
 
     Methods:
-        `_find_all_subseqs(sequence: str, rep_len: int) -> set:`
+        `_find_all_subseqs(sequence: str, length: int) -> set:`
             Finds all possible subsequences of
-            `length == rep_len` in all reading frames.
+            `length == length` in all reading frames.
 
-        `_count_subseqs(sequence: str, subseqs: set, rep_len: int, threshold: int) -> dict:`
+        `_count_subseqs(sequence: str, subseqs: set, length: int, threshold: int) -> dict:`
             Finds number of appearances of all `subseqs` in `sequence`
             Creates a sorted (descending) and filtered
             (`value >= threshold`) `counts` dictionary.
-
-
     """
-    def __init__(self, sequence, rep_len=3, threshold=0):
-        """
-        Initializes a FindRepeats object.
 
-        Args:
-        - sequence (Seq object): DNA/RNA/Protein input sequence object or
-                                 string.
-        - rep_len (int): Desired substring length. Default is 3.
-        - threshold (int): Minimum number of appearances of subsequence in
-                           sequence. Default is 0.
-        """
-        self.sequence = sequence.upper()
-        self.rep_len = rep_len
-        self.threshold = threshold
-        self.subseqs = self._find_all_subseqs(self.sequence,
-                                              self.rep_len)
-        self.counts = self._count_subseqs(self.sequence,
+    def __init__(self, sequence, length=3, threshold=0, sort=None):
+
+        self._sequence = sequence.upper()
+        self._length = length
+        self._threshold = threshold
+        self._sort = sort
+        self.subseqs = self._find_all_subseqs(self._sequence,
+                                              self._length)
+        self.counts = self._count_subseqs(self._sequence,
                                           self.subseqs,
-                                          self.rep_len,
-                                          self.threshold)
+                                          self._sort,
+                                          self._threshold)
 
-    def _find_all_subseqs(self, sequence: object, rep_len: int) -> set:
-        """Finds all possible subsequences of `length == rep_len`
-        in all reading frames.
+    def _find_all_subseqs(self, sequence: object, length: int) -> set:
 
-        Args:
-            sequence (Seq object): DNA/RNA/Protein input sequence object or string.
-            rep_len (int): Desired substring length.
-
-        Returns:
-            list: Set of all possible subsequences of `length == rep_len`
-            in all reading frames sorted alphabetically.
-        """
         subseqs = []
-        for j in range(rep_len):
-            seq = sequence[j:]  # shift the reading frame
-            subseqs += [seq[i : i + rep_len]
-                        for i in range(0, len(seq), rep_len)
-                        if len(seq[i : i + rep_len]) == rep_len]
+        for j in range(length):
+            seq = sequence[j:]
+            subseqs += [seq[i : i + length]
+                        for i in range(0, len(seq), length)
+                        if len(seq[i : i + length]) == length]
         return sorted(list(set(subseqs)))
 
-    def _count_subseqs(self, sequence: object, subseqs: set, rep_len: int,
-                       threshold: int) -> dict:
-        """Finds number of appearances of all `subseqs` in `sequence`.
-        Creates a sorted (descending) and filtered (value >= `threshold`)
-        `counts` dictionary.
+    def _count_subseqs(self, sequence: object, subseqs: set,
+                       sort: str, threshold: int) -> dict:
 
-        Args:
-            sequence (Seq object): DNA/RNA/Protein input sequence object or string.
-            subseqs (set): Subsequence set created with `_find_all_subseqs()`
-            rep_len (int): Desired substring length.
-            threshold (int): Minimum number of appearances of subsequence in sequence.
+        counts = {subseq: sequence.count(subseq) for subseq in subseqs}
 
-        Returns:
-            dict: sorted and filtered dictionary containing
-            subsequence (key) and number of their appearance
-            (value) in sequence.
-        """
+        if sort in ["d", "descending"]:
+            sort_mode = True
+        elif sort in ["a", "ascending"]:
+            sort_mode = False
+        if sort:
+            counts = dict(sorted(counts.items(),
+                                 key=lambda x: x[1],
+                                 reverse=sort_mode))
 
-        # TODO repeats are now overlapping
-        # implement overlap=True/False modes
-
-        counts = {}
-        for j in range(rep_len):
-            seq = sequence[j:]
-            counts.update({subseq: seq.count(subseq) for subseq in subseqs})
-
-        # sort by value (descending)
-        counts = dict(sorted(counts.items(), key=lambda x: x[1], reverse=True))
-
-        # filter out reps below threshold
         def _filter(pair) -> bool:
             key, value = pair
             if value >= threshold:
