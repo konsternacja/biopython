@@ -91,6 +91,12 @@ class FindRepeats:
         counts = dict(filter(_filter, counts.items()))
         return counts
 
+
+class FindRestrictionSite:
+    """
+    A class that is used to find all restriction enzyme sites divided by |.
+    """
+
 # TODO:
 # class FindORFs
 # class FindSNPs
