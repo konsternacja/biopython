@@ -97,11 +97,12 @@ class FindRestrictionSite:
     A class that is used to find all restriction enzyme sites divided by |.
     """
 
+
 # TODO:
 # class FindORFs
 # class FindSNPs
 # class FindSubseqs (maybe some other name?)
-
+# class FindRestrictionSite
 
 if __name__ == "__main__":
     from Bio._utils import run_doctest
