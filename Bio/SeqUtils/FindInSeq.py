@@ -91,11 +91,12 @@ class FindRepeats:
         counts = dict(filter(_filter, counts.items()))
         return counts
 
+
 # TODO:
 # class FindORFs
 # class FindSNPs
 # class FindSubseqs (maybe some other name?)
-
+# class FindRestrictionSite
 
 if __name__ == "__main__":
     from Bio._utils import run_doctest

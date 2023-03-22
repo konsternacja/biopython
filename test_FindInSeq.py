@@ -12,7 +12,7 @@ from Bio.SeqUtils.FindInSeq import FindRepeats
 s = "ATGCATGCATGC"
 
 
-class test_FindInSeq(unittest.TestCase):
+class test_FindRepeats(unittest.TestCase):
 
     def test_find_all_subseqs(self):
         # no optional arguments
